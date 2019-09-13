@@ -1,75 +1,154 @@
+use master
+go
 
-Create database loja_info
-Go
-Use loja_info
-Go
-Create table Vendas(
-id_produto int  not null  PRIMARY key  identity,
-id_cliente int not null
-CONSTRAINT fk_venda_cliente
-FOREIGN KEY (id_cliente) REFERENCES cliente(id_cliente),
-nome_prod  varchar(50) not null,
-Data datetime not null, 
-Nome_client  varchar(50)  not null,
-idVenda int not null
+drop database Lojainfo
+go
+create database Lojainfo      
+go 
+
+use Lojainfo
+GO
+
+create table tb_cli(
+       id_cliente int PRIMARY KEY IDENTITY(1,1),
+       nome nvarchar(50) not null,
+       endereco nvarchar(100),
+       idade int NOT NULL,
+       sexo nvarchar(100) NOT NULL,
+       fone nvarchar(15),
+       email nvarchar(70),
+)
+GO
+
+create table tb_hard(
+       id_hardware int PRIMARY KEY IDENTITY(1,1),
+       descricao nvarchar(50) not null,
+       preco_unit decimal NOT NULL,
+       qtde_atual int NOT NULL, --0 caso nao tenha no estoque
+       qtde_minima int,
+       img image DEFAULT NULL
+)
+GO
+
+create table tb_ven(
+       id_venda int primary key IDENTITY(1,1),
+       id_cliente int not null,
+       data date not null,
+       desconto decimal(2,2)
+)
+GO
+
+create table tb_ven_item(
+       id_item int PRIMARY KEY identity(1,1),
+       id_venda int not null,
+       id_hardware int not null,
+       qtde_item int not null,
+       pco_vda decimal(8,2) not null
+)
+GO
+
+
+create table tb_ven_cancel(
+       id_venda int not null,
+       id_venda_canceladas int not null unique,
+       id_cliente int
+
+
 
 )
-go
-Create table cliente(
-Id_cliente int not null primary key,
-DataNasc datetime not null,
-Nome_client  varchar(50)  not null,
-Enderc varchar(100) not null,
-Telephone int not null
-)
-go
-Create table Vendas_Canceladas  (
-id_produto int  not null ,
-nome_prod  varchar(50) not null,
-Data datetime not null, 
-Id_cliente int not null,
-idVendasc int not null primary key
-)
-go
-Create table Item_Vendido(
-id_produto int  not null 
-CONSTRAINT fk_it_prod
-     FOREIGN KEY (id_produto) REFERENCES tb_Produtos(id_produto)
 
-nome_prod varchar(50) not null,
-Data datetime not null, 
-Id_cliente int not null,
-idVenda int not null
- 
-CONSTRAINT fk_nome_prod_vendas
-FOREIGN KEY (idVenda) REFERENCES tb_vendas(idVenda),
- 
-idVendasc int not null 
-CONSTRAINT fk_vendasc_Vendascan
-FOREIGN KEY (idVendasc) REFERENCES tb_Vendas_Canceladas(id_Vendasc)
+go
 
-)
-go
-Create table Produtos(
-id_produto int  not null primary key,
-nome_prod  varchar(50) not null,
-qtde_prod int not null,
-preco decimal (10,2) not null
 
-)
+alter table tb_ven
+      ADD CONSTRAINT fk_vda_cli
+      FOREIGN KEY (id_cliente) REFERENCES tb_cli(id_cliente)
+      go 
+
+alter table tb_ven_item
+      ADD CONSTRAINT fk_vda_venda 
+      FOREIGN KEY (id_venda) REFERENCES tb_ven(id_venda)
+      go
+alter table tb_hard
+      ADD CONSTRAINT fk_vda_hardware
+      FOREIGN KEY (id_hardware) REFERENCES tb_hard(id_hardware)
+      go
+alter table tb_ven_item
+      ADD CONSTRAINT fk_vda_hardware2
+      FOREIGN KEY (id_hardware) REFERENCES tb_hard(id_hardware)
+      go
+      
+      
+      
+alter table tb_ven_cancel
+      ADD CONSTRAINT fk_vda_cancel
+      FOREIGN KEY (id_venda_canceladas) REFERENCES tb_ven(id_venda)
+      go
+
+      
+      
+insert into tb_cli (nome,idade,sexo,email,endereco,fone) VALUES 
+('Guilherme',17,'Maculino','guilherme.lima.dinizt@gmail.com','Av Marechal Tito, 7455', '11945282941' ),
+('Ayodele',17,'Maculino','ayodele@gmail.com','Rua Visconde de Alzejur, 221', '11958423845' ),
+('Henrique',17,'Maculino','henrique@gmail.com','Rua Maria da Paz, 112', '11995674201')
+
+                                                                                                                  
 go
-Insert  into Vendas values (1, 1, 'Impressora', '27/08/2019', 'Ayodele', 1),
-			(2, 2, 'Teclado', '12/08/2019', 'Lucas', 2);
+ insert into tb_hard (descricao,preco_unit,qtde_atual,qtde_minima) VALUES ('PC', 2300.00, 114,800),
+('Placa de vídeo', 500.00, 427, 800),
+('Gabinete', 150.00, 100,150),
+('Monitor', 1500, 50,100),
+('Mouse razer', 389.00, 75,100)
 go
-Insert  into cliente values (1, '21/03/2002',  'Guilherme Lima', 'Av Marechal Tito, 7455', 11990236381),
-			(2, '25/04/2002',  'Lucas', 'Rua Major Boaventura, 567', 11984053357);
+insert into tb_ven (id_cliente,data) VALUES (2,'22/05/2019'),
+(2,'08/11/2019'),
+(3,'12/05/2019'),
+(2,'14/10/2019'),
+(3,'15/09/2019')
 go
-Insert  into Vendas_Canceladas  values (5, 'Mouse', '12/08/2019',  5  , 5),
-			(6, 'Headset', '13/08/2019',  6  , 6);
+insert into tb_ven_item (id_venda,id_hardware,pco_vda,qtde_item) VALUES 
+(1,1,1000.00,1),
+(2,2,900.00,2),
+(3,3,1000.00,3),
+(4,4,800.00,7),
+(5,5,7000.00,9)
 go
-Insert  into Item_Vendido values (10, 'Cabo HDMI', '14/08/2019', 10, 10),
-			(20, 'PS4', '28/08/2019', 20, 20);
+                                                                                                                    
+                                                                                                                   
+/*select * from tb_cli
 go
-Insert  into Produtos (30, 'Placa mãe', 50,  550),
-			(35, 'Fonte', 14,  250);
+select * from tb_hard
 go
+select * from tb_ven
+go
+select * from tb_ven_item
+go
+*/
+
+
+/*
+
+Busca somente os clientes que fizeram compra */
+
+select v.id_cliente, c.nome FROM tb_ven v
+inner join tb_cli c
+on v.id_cliente = c.id_cliente
+
+go
+
+
+
+/* Busca somente os clientes que não fizeram a compra */
+
+select v.id_cliente, c.nome FROM tb_cli c
+left join tb_ven v
+on v.id_cliente = c.id_cliente WHERE v.id_cliente is null
+
+
+
+
+select vi.id_hardware, h.descricao FROM tb_hard as h
+left join tb_ven_item vi
+on vi.id_hardware = h.descricao  WHERE vi.id_hardware is null
+
+go 
